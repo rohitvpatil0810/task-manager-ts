@@ -18,7 +18,7 @@ model User {
   firstName      String
   lastName       String
   email          String    @unique
-  hashedPassword String
+  hashedPassword String?
   googleId       String?
   lastLogout     DateTime?
   createdAt      DateTime  @default(now())
