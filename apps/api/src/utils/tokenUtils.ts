@@ -16,7 +16,6 @@ export const verifyToken = async (token: string) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
 
-    console.log('decoded:', decoded);
     const user = await prisma.user.findUnique({
       where: {
         id: decoded.userId,
@@ -24,14 +23,11 @@ export const verifyToken = async (token: string) => {
     });
     if (!user) throw new AuthFailureError(USER_NOT_FOUND);
 
-    console.log('user:', user.lastLogout?.getTime());
-
     if (
       user.lastLogout &&
       decoded.iat &&
       decoded.iat < user.lastLogout.getTime() / 1000
     ) {
-      console.log('Already logged out');
       throw new AuthFailureError(INVALID_TOKEN);
     }
 
