@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { SuccessMsgResponse } from '../core/ApiResponse';
-
+import authRoutes from './authRoutes';
 const router = Router();
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
@@ -10,5 +10,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 });
+
+router.use('/auth', authRoutes);
 
 export default router;
