@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import prisma from './prismaClient';
-import { AuthFailureError } from '../core/ApiError';
-import { INVALID_TOKEN, USER_NOT_FOUND } from '../constants/errorMessages';
+import { AccessTokenError, AuthFailureError } from '../core/ApiError';
+import { INVALID_TOKEN } from '../constants/errorMessages';
 import Logger from '../core/Logger';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
@@ -21,14 +21,14 @@ export const verifyToken = async (token: string) => {
         id: decoded.userId,
       },
     });
-    if (!user) throw new AuthFailureError(USER_NOT_FOUND);
+    if (!user) throw new AccessTokenError(INVALID_TOKEN);
 
     if (
       user.lastLogout &&
       decoded.iat &&
       decoded.iat < user.lastLogout.getTime() / 1000
     ) {
-      throw new AuthFailureError(INVALID_TOKEN);
+      throw new AccessTokenError(INVALID_TOKEN);
     }
 
     return user;

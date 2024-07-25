@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Logger from '../core/Logger';
-import { AuthFailureError } from '../core/ApiError';
+import { AccessTokenError, AuthFailureError } from '../core/ApiError';
 import { INVALID_TOKEN } from '../constants/errorMessages';
 import { verifyToken } from '../utils/tokenUtils';
 
@@ -12,7 +12,7 @@ export const authenticate = async (
   try {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      throw new AuthFailureError(INVALID_TOKEN);
+      throw new AccessTokenError(INVALID_TOKEN);
     }
 
     const decoded = await verifyToken(token);
