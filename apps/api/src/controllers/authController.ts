@@ -7,7 +7,11 @@ import {
 import { validateData } from '../utils/dataValidator';
 import * as authService from '../services/authService';
 import { SuccessMsgResponse, SuccessResponse } from '../core/ApiResponse';
-import { LOGOUT_SUCCESS, SIGNUP_SUCCESS } from '../constants/successMessages';
+import {
+  LOGOUT_SUCCESS,
+  SIGNUP_SUCCESS,
+  USER_PROFILE_FETCHED,
+} from '../constants/successMessages';
 
 export const login = async (
   req: Request,
@@ -60,6 +64,17 @@ export const logout = async (
     return new SuccessMsgResponse(LOGOUT_SUCCESS).send(res);
   } catch (error) {
     Logger.error('Error in logout (controller): ', error);
+    next(error);
+  }
+};
+
+export const me = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = res.locals.user;
+
+    return new SuccessResponse(USER_PROFILE_FETCHED, user).send(res);
+  } catch (error) {
+    Logger.error('Error in me (controller): ', error);
     next(error);
   }
 };
