@@ -1,11 +1,17 @@
-import "./App.css";
-import { Button } from "@/components/ui/button";
+import AuthProvider from "./components/Auth/AuthProvider";
+import { BrowserRouter as Router } from "react-router-dom";
+import AppRoutes from "./AppRoutes";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 function App() {
   return (
-    <>
-      <Button>Project Setup</Button>
-    </>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <AuthProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
