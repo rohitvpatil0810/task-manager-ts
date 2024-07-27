@@ -1,3 +1,4 @@
+import routes from "@/config/routes";
 import { useAuth } from "./AuthProvider";
 import { Navigate, Outlet } from "react-router-dom";
 
@@ -14,7 +15,7 @@ const PrivateRoute: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  return user ? <Outlet /> : <Navigate to="/" />;
+  return user ? <Outlet /> : <Navigate to={routes.login} />;
 };
 
 export default PrivateRoute;

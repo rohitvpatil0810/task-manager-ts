@@ -1,3 +1,4 @@
+import routes from "@/config/routes";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
@@ -7,7 +8,7 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       if (error.response.data.statusCode === 10003) {
-        window.location.href = "/";
+        window.location.href = routes.login;
       }
     }
     return Promise.reject(error);
