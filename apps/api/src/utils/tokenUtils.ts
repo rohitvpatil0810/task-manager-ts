@@ -38,7 +38,7 @@ export const verifyToken = async (token: string) => {
       error instanceof jwt.TokenExpiredError ||
       error instanceof jwt.JsonWebTokenError
     ) {
-      throw new AuthFailureError(INVALID_TOKEN);
+      throw new AccessTokenError(INVALID_TOKEN);
     } else {
       throw error;
     }
