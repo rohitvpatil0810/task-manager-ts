@@ -3,6 +3,7 @@ import Logger from '../core/Logger';
 import {
   AuthFailureError,
   BadRequestError,
+  InternalError,
   NotFoundError,
 } from '../core/ApiError';
 import {
@@ -124,24 +125,34 @@ export const googleSignup = async (tokenId: string) => {
     });
     const payload = ticket.getPayload();
 
-    const user = await prisma.user.upsert({
+    if (!payload) throw new InternalError();
+
+    // Check if user exists
+    const existingUser = await prisma.user.findFirst({
       where: {
-        googleId: payload?.sub,
-      },
-      create: {
-        email: payload?.email!,
-        firstName: payload?.given_name!,
-        lastName: payload?.family_name!,
-        googleId: payload?.sub,
-      },
-      update: {
-        email: payload?.email,
-        firstName: payload?.given_name,
-        lastName: payload?.family_name,
+        OR: [{ googleId: payload.sub }, { email: payload.email! }],
       },
     });
 
-    const token = await generateToken(user.id);
+    const user = await prisma.user.upsert({
+      where: {
+        id: existingUser?.id,
+      },
+      create: {
+        email: payload.email!,
+        firstName: payload.given_name!.toLowerCase(),
+        lastName: payload.family_name!.toLowerCase(),
+        googleId: payload.sub,
+      },
+      update: {
+        email: payload.email,
+        firstName: payload.given_name?.toLowerCase(),
+        lastName: payload.family_name?.toLowerCase(),
+        googleId: payload.sub,
+      },
+    });
+
+    const token = generateToken(user.id);
 
     return { user, token };
   } catch (error) {
