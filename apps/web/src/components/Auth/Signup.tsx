@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "./AuthProvider";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleSignin from "./GoogleSignin";
 import routes from "@/config/routes";
 
@@ -171,6 +171,12 @@ const Signup = () => {
                   Signup
                 </LoadingButton>
                 <GoogleSignin />
+                <div className="mt-4 text-center text-sm">
+                  Already have an account?{" "}
+                  <Link to={routes.login} className="underline">
+                    Log in
+                  </Link>
+                </div>
               </div>
             </CardFooter>
           </Card>
