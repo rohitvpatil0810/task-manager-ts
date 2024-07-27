@@ -105,7 +105,10 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log(error.response);
       if (error.response && error.response.status === 400) {
         setValidationErrors(error.response.data.data);
-      } else if (error.response && error.response.status === 401) {
+      } else if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 404)
+      ) {
         setError(error.response.data.message);
         toast({
           description: error.response.data.message,
