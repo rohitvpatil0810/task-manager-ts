@@ -20,6 +20,13 @@ interface AuthContextProps {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   googleSignin: (tokenId: any) => Promise<void>;
+  signup: (values: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    confirmPassword: string;
+  }) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
   error: string | null;
@@ -112,6 +119,38 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const signup = async (values: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    confirmPassword: string;
+  }) => {
+    try {
+      clearError();
+      await axios.post(APIEndpoints.AUTH.SIGNUP, values);
+      toast({
+        description: "Signup successful",
+      });
+      navigate(routes.login);
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        if (error.response.data.message !== "Bad Request") {
+          setError(error.response.data.message);
+          toast({
+            description: error.response.data.message,
+          });
+        }
+        setValidationErrors(error.response.data.data);
+      } else {
+        setError("Something went wrong. Please try again.");
+        toast({
+          description: "Something went wrong. Please try again.",
+        });
+      }
+    }
+  };
+
   const logout = async () => {
     try {
       await axios.post(APIEndpoints.AUTH.LOGOUT, null, {
@@ -137,6 +176,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         user,
         login,
         googleSignin,
+        signup,
         logout,
         loading,
         error,

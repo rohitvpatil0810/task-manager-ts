@@ -1,6 +1,7 @@
 const routes = {
   landing: "/login",
   login: "/login",
+  signup: "/signup",
   home: "/home",
 };
 
