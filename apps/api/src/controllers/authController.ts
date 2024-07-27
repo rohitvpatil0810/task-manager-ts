@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Logger from '../core/Logger';
 import {
+  googleSigninValidation,
   loginValidation,
   signUpValidation,
 } from '../validations/authValidation';
@@ -8,6 +9,7 @@ import { validateData } from '../utils/dataValidator';
 import * as authService from '../services/authService';
 import { SuccessMsgResponse, SuccessResponse } from '../core/ApiResponse';
 import {
+  GOOGLE_SIGNUP_SUCCESS,
   LOGOUT_SUCCESS,
   SIGNUP_SUCCESS,
   USER_PROFILE_FETCHED,
@@ -79,10 +81,22 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export const googleLogin = async (
+export const googleSignup = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  // Google login logic here
+  try {
+    const { value, error } = validateData(req.body, googleSigninValidation);
+    if (error) return error.send(res);
+
+    const { tokenId } = value;
+
+    const data = await authService.googleSignup(tokenId);
+
+    return new SuccessResponse(GOOGLE_SIGNUP_SUCCESS, data).send(res);
+  } catch (error) {
+    Logger.error('Error in googleSignup (controller): ', error);
+    next(error);
+  }
 };

@@ -12,6 +12,9 @@ import {
 } from '../constants/errorMessages';
 import { comparePassword, hashPassword } from '../utils/passwordUtils';
 import { generateToken } from '../utils/tokenUtils';
+import googleOauthClient, {
+  GOOGLE_CLIENT_ID,
+} from '../utils/googleOauthClient';
 
 export interface SignUpData {
   firstName: string;
@@ -109,6 +112,40 @@ export const logout = async (userId: string) => {
     return user;
   } catch (error) {
     Logger.error('Error in logout (service): ', error);
+    throw error;
+  }
+};
+
+export const googleSignup = async (tokenId: string) => {
+  try {
+    const ticket = await googleOauthClient.verifyIdToken({
+      idToken: tokenId,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+
+    const user = await prisma.user.upsert({
+      where: {
+        googleId: payload?.sub,
+      },
+      create: {
+        email: payload?.email!,
+        firstName: payload?.given_name!,
+        lastName: payload?.family_name!,
+        googleId: payload?.sub,
+      },
+      update: {
+        email: payload?.email,
+        firstName: payload?.given_name,
+        lastName: payload?.family_name,
+      },
+    });
+
+    const token = await generateToken(user.id);
+
+    return { user, token };
+  } catch (error) {
+    Logger.error('Error in googleSignup (service): ', error);
     throw error;
   }
 };

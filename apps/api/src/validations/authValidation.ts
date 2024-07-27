@@ -12,3 +12,7 @@ export const loginValidation = Joi.object({
   email: Joi.string().email().required().lowercase(),
   password: Joi.string().required(),
 });
+
+export const googleSigninValidation = Joi.object({
+  tokenId: Joi.string().required(),
+});

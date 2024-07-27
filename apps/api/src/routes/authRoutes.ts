@@ -7,8 +7,6 @@ router.post('/login', authController.login);
 router.post('/signup', authController.signUp);
 router.post('/logout', authenticate, authController.logout);
 router.get('/me', authenticate, authController.me);
-router.post('/google', (req, res) => {
-  // Google login logic here
-});
+router.post('/google', authController.googleSignup);
 
 export default router;
