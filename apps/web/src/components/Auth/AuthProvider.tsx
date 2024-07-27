@@ -1,6 +1,9 @@
 import APIEndpoints from "@/config/apiEndpoints";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import routes from "@/config/routes";
 
 interface User {
   id: string;
@@ -16,6 +19,7 @@ interface AuthProviderProps {
 interface AuthContextProps {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  googleSignin: (tokenId: any) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
   error: string | null;
@@ -26,6 +30,8 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +61,26 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     fetchUser();
   }, []);
 
+  const googleSignin = async (tokenId: any) => {
+    try {
+      clearError();
+      const response = await axios.post(APIEndpoints.AUTH.GOOGLE_SIGNIN, {
+        tokenId: tokenId.credential,
+      });
+      setUser(response.data.data.user);
+      localStorage.setItem("token", response.data.data.token);
+      toast({
+        description: "Login successful",
+      });
+      navigate(routes.home);
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
+      toast({
+        description: "Something went wrong. Please try again.",
+      });
+    }
+  };
+
   const login = async (email: string, password: string) => {
     try {
       clearError();
@@ -64,13 +90,24 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       });
       setUser(response.data.data.user);
       localStorage.setItem("token", response.data.data.token);
+      toast({
+        description: "Login successful",
+      });
+      navigate(routes.home);
     } catch (error: any) {
+      console.log(error.response);
       if (error.response && error.response.status === 400) {
         setValidationErrors(error.response.data.data);
       } else if (error.response && error.response.status === 401) {
-        setError(error.respone.data.message);
+        setError(error.response.data.message);
+        toast({
+          description: error.response.data.message,
+        });
       } else {
         setError("Something went wrong. Please try again.");
+        toast({
+          description: "Something went wrong. Please try again.",
+        });
       }
     }
   };
@@ -83,6 +120,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         },
       });
       localStorage.removeItem("token");
+      navigate(routes.login);
     } catch (error) {
       setError("Something went wrong. Please try again.");
     }
@@ -98,6 +136,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       value={{
         user,
         login,
+        googleSignin,
         logout,
         loading,
         error,
