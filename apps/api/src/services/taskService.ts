@@ -25,11 +25,30 @@ export const createTask = async (
   }
 };
 
-export const getTasks = async (userId: string) => {
+export const getTasks = async (
+  userId: string,
+  filter: { query: string; status: TaskStatus } | undefined,
+) => {
+  console.log('getTasks', filter);
   try {
     const tasks = await prisma.task.findMany({
       where: {
         userId,
+        OR: [
+          {
+            title: {
+              contains: filter?.query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: filter?.query,
+              mode: 'insensitive',
+            },
+          },
+        ],
+        status: filter?.status,
       },
       orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }],
     });

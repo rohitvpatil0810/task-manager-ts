@@ -1,8 +1,16 @@
 import { TaskStatus } from '@prisma/client';
+import { query } from 'express';
 import Joi from 'joi';
 
 export const getTaskValidation = Joi.object({
   id: Joi.string().hex().required().length(24),
+});
+
+export const getTasksValidation = Joi.object({
+  query: Joi.string().min(3).optional().trim(),
+  status: Joi.string()
+    .valid(TaskStatus.TODO, TaskStatus.IN_PROGRESS, TaskStatus.DONE)
+    .optional(),
 });
 
 export const createTaskValidation = Joi.object({

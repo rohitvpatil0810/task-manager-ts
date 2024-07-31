@@ -5,6 +5,7 @@ import {
   changeStatusValidation,
   createTaskValidation,
   deleteTaskValidation,
+  getTasksValidation,
   getTaskValidation,
   updateTaskValidation,
 } from '../validations/taskValidation';
@@ -45,9 +46,14 @@ export const getTasks = async (
   next: NextFunction,
 ) => {
   try {
+    const { value, error } = validateData(req.query, getTasksValidation);
+    if (error) return error.send(res);
+
     const userId = res.locals.user.id;
 
-    const data = await taskService.getTasks(userId);
+    const { query, status } = value;
+
+    const data = await taskService.getTasks(userId, { query, status });
 
     return new SuccessResponse(TASKS_FETCHED, data).send(res);
   } catch (error) {
