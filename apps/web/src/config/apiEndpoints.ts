@@ -8,6 +8,14 @@ const APIEndpoints = {
     LOGOUT: `${BASE_URL}/auth/logout`,
     ME: `${BASE_URL}/auth/me`,
   },
+  TASK: {
+    CREATE: `${BASE_URL}/tasks`,
+    GET: `${BASE_URL}/tasks`,
+    GET_ONE: (id: string) => `${BASE_URL}/tasks/${id}`,
+    UPDATE: (id: string) => `${BASE_URL}/tasks/${id}`,
+    DELETE: (id: string) => `${BASE_URL}/tasks/${id}`,
+    CHANGE_STATUS: (id: string) => `${BASE_URL}/tasks/${id}/change-status`,
+  },
 };
 
 export default APIEndpoints;
