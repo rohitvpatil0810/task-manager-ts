@@ -22,6 +22,7 @@ const TaskCard = ({ task }: { task: Task }) => {
 
     return draggable({
       element: el!,
+      getInitialData: () => ({ task }),
       onDragStart: () => setDragging(true),
       onDrop: () => setDragging(false),
     });

@@ -1,7 +1,10 @@
 import { cn, invarient } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
-import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { TaskStatus } from "./TaskProvider";
+import {
+  dropTargetForElements,
+  ElementDragPayload,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { Task, TaskStatus, useTask } from "./TaskProvider";
 import { Alert, AlertTitle } from "@//components/ui/alert";
 
 type Props = {
@@ -10,8 +13,15 @@ type Props = {
 };
 
 const TaskColumn = ({ title, children }: Props) => {
+  const taskContext = useTask();
   const ref = useRef(null);
   const [isDraggedOver, setIsDraggedOver] = useState(false);
+
+  const onDrop = (source: ElementDragPayload) => {
+    setIsDraggedOver(false);
+    const task = source.data.task as Task;
+    taskContext?.changeStatus(task.id, title);
+  };
 
   useEffect(() => {
     const el = ref.current;
@@ -20,7 +30,7 @@ const TaskColumn = ({ title, children }: Props) => {
       element: el!,
       onDragEnter: () => setIsDraggedOver(true),
       onDragLeave: () => setIsDraggedOver(false),
-      onDrop: () => setIsDraggedOver(false),
+      onDrop: ({ source }) => onDrop(source),
     });
   }, []);
 
