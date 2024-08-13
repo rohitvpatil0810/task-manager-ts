@@ -6,13 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Task } from "./TaskProvider";
 import timeAgo from "@/lib/timesAgo";
 import { useEffect, useRef, useState } from "react";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { cn, invarient } from "@/lib/utils";
 import UpdateTask from "./UpdateTask";
+import DeleteTask from "./DeleteTask";
 const TaskCard = ({ task }: { task: Task }) => {
   const ref = useRef(null);
   const [dragging, setDragging] = useState<boolean>(false);
@@ -48,7 +48,7 @@ const TaskCard = ({ task }: { task: Task }) => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline">Delete</Button>
+        <DeleteTask taskId={task.id} />
         <UpdateTask task={task} />
       </CardFooter>
     </Card>
