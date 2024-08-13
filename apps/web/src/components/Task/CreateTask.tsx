@@ -60,10 +60,14 @@ const CreateTask = (_: Props) => {
   });
 
   const onSubmit = async (values: z.infer<typeof createTaskFormSchema>) => {
-    taskContext?.createTask(values.title, values.description);
-    if (!taskContext?.error) {
-      form.reset();
+    const result = await taskContext?.createTask(
+      values.title,
+      values.description
+    );
+
+    if (result) {
       setOpen(false);
+      form.reset();
     }
   };
 
