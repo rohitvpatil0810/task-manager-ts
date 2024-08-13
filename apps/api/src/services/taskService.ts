@@ -29,27 +29,32 @@ export const getTasks = async (
   userId: string,
   filter: { query: string; status: TaskStatus } | undefined,
 ) => {
-  console.log('getTasks', filter);
   try {
+    const whereClause: any = { userId };
+
+    if (filter?.query) {
+      whereClause.OR = [
+        {
+          title: {
+            contains: filter.query,
+            mode: 'insensitive',
+          },
+        },
+        {
+          description: {
+            contains: filter.query,
+            mode: 'insensitive',
+          },
+        },
+      ];
+    }
+
+    if (filter?.status) {
+      whereClause.status = filter.status;
+    }
+
     const tasks = await prisma.task.findMany({
-      where: {
-        userId,
-        OR: [
-          {
-            title: {
-              contains: filter?.query,
-              mode: 'insensitive',
-            },
-          },
-          {
-            description: {
-              contains: filter?.query,
-              mode: 'insensitive',
-            },
-          },
-        ],
-        status: filter?.status,
-      },
+      where: whereClause,
       orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }],
     });
 
