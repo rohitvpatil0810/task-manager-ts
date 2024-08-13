@@ -25,11 +25,15 @@ interface TaskProviderProps {
 interface TaskContextProps {
   loading: boolean;
   tasks: Task[];
-  createTask: (title: string, description: string) => Promise<void>;
+  createTask: (title: string, description: string) => Promise<boolean>;
   searchTasks: (query: string, status?: TaskStatus) => Promise<void>;
   getTask: (id: string) => Promise<void>;
-  updateTask: (id: string, title: string, description: string) => Promise<void>;
-  deleteTask: (id: string) => Promise<void>;
+  updateTask: (
+    id: string,
+    title: string,
+    description: string
+  ) => Promise<boolean>;
+  deleteTask: (id: string) => Promise<boolean>;
   changeStatus: (id: string, status: TaskStatus) => Promise<void>;
   error: Record<string, string> | null;
   clearError: () => void;
@@ -47,8 +51,10 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
     setError(null);
   };
 
-  const createTask = async (title: string, description: string) => {
-    clearError();
+  const createTask = async (
+    title: string,
+    description: string
+  ): Promise<boolean> => {
     try {
       const response = await axios.post(
         APIEndpoints.TASK.CREATE,
@@ -65,12 +71,15 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
 
       setTasks((prev) => [response.data.data, ...prev]);
       toast({ description: response.data.message });
+      clearError();
+      return true;
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
         setError(error.response.data.data);
       } else {
         toast({ description: "Something went wrong. Please try again." });
       }
+      return false;
     }
   };
 
@@ -120,8 +129,11 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
     }
   };
 
-  const updateTask = async (id: string, title: string, description: string) => {
-    clearError();
+  const updateTask = async (
+    id: string,
+    title: string,
+    description: string
+  ): Promise<boolean> => {
     try {
       const response = await axios.put(
         APIEndpoints.TASK.UPDATE(id),
@@ -138,21 +150,32 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
       setTasks((prev) =>
         prev.map((task) => (task.id === id ? response.data.data : task))
       );
-    } catch (error) {
-      console.error("Error in updateTask (provider): ", error);
+      toast({ description: response.data.message });
+      clearError();
+      return true;
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        setError(error.response.data.data);
+      } else {
+        toast({ description: "Something went wrong. Please try again." });
+      }
+      return false;
     }
   };
 
-  const deleteTask = async (id: string) => {
+  const deleteTask = async (id: string): Promise<boolean> => {
     try {
-      await axios.delete(APIEndpoints.TASK.DELETE(id), {
+      const response = await axios.delete(APIEndpoints.TASK.DELETE(id), {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       setTasks((prev) => prev.filter((task) => task.id !== id));
+      toast({ description: response.data.message });
+      return true;
     } catch (error) {
-      console.error("Error in deleteTask (provider): ", error);
+      toast({ description: "Something went wrong. Please try again." });
+      return false;
     }
   };
 
@@ -172,8 +195,9 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
       setTasks((prev) =>
         prev.map((task) => (task.id === id ? response.data.data : task))
       );
+      toast({ description: response.data.message });
     } catch (error) {
-      console.error("Error in changeStatus (provider): ", error);
+      toast({ description: "Something went wrong. Please try again." });
     }
   };
 
