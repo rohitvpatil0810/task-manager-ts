@@ -27,6 +27,7 @@ interface TaskContextProps {
   tasks: Task[];
   createTask: (title: string, description: string) => Promise<boolean>;
   searchTasks: (query: string, status?: TaskStatus) => Promise<void>;
+  clearSearchResults: () => Promise<void>;
   getTask: (id: string) => Promise<void>;
   updateTask: (
     id: string,
@@ -49,6 +50,11 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
 
   const clearError = () => {
     setError(null);
+  };
+
+  const clearSearchResults = async () => {
+    setTasks([]);
+    await getTasks();
   };
 
   const createTask = async (
@@ -111,7 +117,11 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
         },
       });
       setTasks(response.data.data);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response.status === 404) {
+        setTasks([]);
+        toast({ description: error.response.data.message });
+      }
       console.error("Error in searchTasks (provider): ", error);
     }
   };
@@ -208,6 +218,7 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
         tasks,
         createTask,
         searchTasks,
+        clearSearchResults,
         getTask,
         updateTask,
         deleteTask,
