@@ -75,7 +75,6 @@ export const getTask = async (
 
     const { id } = value;
     const data = await taskService.getTask(userId, id);
-    console.log(data);
     return new SuccessResponse(TASK_FETCHED, data).send(res);
   } catch (error) {
     Logger.error('Error in getTask (controller): ', error);

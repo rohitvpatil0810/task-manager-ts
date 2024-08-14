@@ -103,7 +103,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         description: response.data.message,
       });
     } catch (error: any) {
-      console.log(error.response);
       if (error.response && error.response.status === 400) {
         setValidationErrors(error.response.data.data);
       } else if (
