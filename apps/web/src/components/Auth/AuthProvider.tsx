@@ -79,6 +79,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       toast({
         description: "Login successful",
       });
+      toast({ description: response.data.message });
       navigate(routes.home);
     } catch (error) {
       setError("Something went wrong. Please try again.");
@@ -97,10 +98,10 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       });
       setUser(response.data.data.user);
       localStorage.setItem("token", response.data.data.token);
-      toast({
-        description: "Login successful",
-      });
       navigate(routes.home);
+      toast({
+        description: response.data.message,
+      });
     } catch (error: any) {
       console.log(error.response);
       if (error.response && error.response.status === 400) {
@@ -131,10 +132,11 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   }) => {
     try {
       clearError();
-      await axios.post(APIEndpoints.AUTH.SIGNUP, values);
+      const response = await axios.post(APIEndpoints.AUTH.SIGNUP, values);
       toast({
         description: "Signup successful",
       });
+      toast({ description: response.data.message });
       navigate(routes.login);
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
@@ -156,12 +158,14 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      await axios.post(APIEndpoints.AUTH.LOGOUT, null, {
+      const response = await axios.post(APIEndpoints.AUTH.LOGOUT, null, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+      setUser(null);
       localStorage.removeItem("token");
+      toast({ description: response.data.message });
       navigate(routes.login);
     } catch (error) {
       setError("Something went wrong. Please try again.");
