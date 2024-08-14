@@ -5,10 +5,12 @@ import routes from "./config/routes";
 import Signup from "@/components/Auth/Signup";
 import TaskProvider from "./components/Task/TaskProvider";
 import Home from "./components/Home/Home";
+import LandingPage from "./components/LandingPage/LandingPage";
 
 const AppRoutes = () => {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path={routes.login} element={<Login />} />
       <Route path={routes.signup} element={<Signup />} />
       <Route
