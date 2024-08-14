@@ -98,7 +98,6 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
       });
       setTasks(response.data.data);
     } catch (error) {
-      console.error("Error in getTasks (provider): ", error);
     } finally {
       setLoading(false);
     }
@@ -122,7 +121,6 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
         setTasks([]);
         toast({ description: error.response.data.message });
       }
-      console.error("Error in searchTasks (provider): ", error);
     }
   };
 
@@ -134,9 +132,7 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
         },
       });
       return response.data.data;
-    } catch (error) {
-      console.error("Error in getTask (provider): ", error);
-    }
+    } catch (error) {}
   };
 
   const updateTask = async (
