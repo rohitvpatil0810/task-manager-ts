@@ -10,3 +10,7 @@ export function invarient(condition: any, message: string) {
     throw new Error(message);
   }
 }
+
+export function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
