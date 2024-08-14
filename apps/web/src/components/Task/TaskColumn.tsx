@@ -38,14 +38,17 @@ const TaskColumn = ({ title, children }: Props) => {
     <div
       id={title}
       ref={ref}
-      className={cn("h-screen w-1/3 rounded-lg border-2 p-4", {
-        "bg-gray-600": isDraggedOver,
-      })}
+      className={cn(
+        "w-full md:w-1/3 h-full rounded-lg border-2 flex flex-col p-4",
+        {
+          "bg-gray-600": isDraggedOver,
+        }
+      )}
     >
       <Alert className="mb-4">
         <AlertTitle>{title}</AlertTitle>
       </Alert>
-      {children}
+      <div className="flex-1 overflow-y-auto scrollbar-hide">{children}</div>
     </div>
   );
 };
