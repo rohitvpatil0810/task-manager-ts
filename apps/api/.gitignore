@@ -1,0 +1,3 @@
+# ignore all files in this directory - frontend build files
+# generated automatically by github actions
+public

@@ -10,6 +10,7 @@ import {
 import { environment } from './config/config';
 import routes from './routes';
 import { logging } from './middleware/logging';
+import path from 'path';
 
 process.on('unhandledRejection', (e) => {
   Logger.error(e);
@@ -21,10 +22,17 @@ app.use(express.json({ limit: '10mb' }));
 app.use(
   express.urlencoded({ extended: true, limit: '10mb', parameterLimit: 50000 }),
 );
+app.use(express.static('public'));
 
 app.use(logging);
 
 app.use('/api', routes);
+
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+  });
+}
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => next(new NotFoundError()));
