@@ -36,7 +36,7 @@ jobs:
       - name: Copy frontend build to backend
         run: |
           mkdir -p ./apps/api/public
-          cp -r ./apps/web/dist ./apps/api/public
+          cp -r ./apps/web/dist/* ./apps/api/public
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
