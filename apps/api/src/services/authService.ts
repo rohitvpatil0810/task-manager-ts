@@ -134,23 +134,31 @@ export const googleSignup = async (tokenId: string) => {
       },
     });
 
-    const user = await prisma.user.upsert({
-      where: {
-        id: existingUser?.id,
-      },
-      create: {
-        email: payload.email!,
-        firstName: payload.given_name!.toLowerCase(),
-        lastName: payload.family_name!.toLowerCase(),
-        googleId: payload.sub,
-      },
-      update: {
-        email: payload.email,
-        firstName: payload.given_name?.toLowerCase(),
-        lastName: payload.family_name?.toLowerCase(),
-        googleId: payload.sub,
-      },
-    });
+    console.log('existingUser', existingUser?.id);
+    let user;
+
+    if (existingUser) {
+      user = await prisma.user.update({
+        where: {
+          id: existingUser.id,
+        },
+        data: {
+          email: payload.email,
+          firstName: payload.given_name?.toLowerCase(),
+          lastName: payload.family_name?.toLowerCase(),
+          googleId: payload.sub,
+        },
+      });
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email: payload.email!,
+          firstName: payload.given_name!.toLowerCase(),
+          lastName: payload.family_name!.toLowerCase(),
+          googleId: payload.sub,
+        },
+      });
+    }
 
     const token = generateToken(user.id);
 
