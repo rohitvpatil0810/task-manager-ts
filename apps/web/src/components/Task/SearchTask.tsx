@@ -6,6 +6,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { CircleX } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
+import { useEffect } from "react";
 
 type Props = {};
 
@@ -39,6 +40,12 @@ const SearchTask = (_: Props) => {
     taskContext?.clearSearchResults();
   };
 
+  useEffect(() => {
+    if (form.watch().search === "") {
+      taskContext?.clearSearchResults();
+    }
+  }, [form.watch().search]);
+
   return (
     <Form {...form}>
       <div className="flex items-center space-x-2">
@@ -60,11 +67,11 @@ const SearchTask = (_: Props) => {
             )}
           />
         </form>
-        {form.getValues("search") ? (
+        {form.watch().search !== "" && (
           <Button onClick={clearSearch}>
             <CircleX size={20} />
           </Button>
-        ) : null}
+        )}
       </div>
     </Form>
   );
